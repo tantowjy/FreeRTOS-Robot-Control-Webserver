@@ -1,4 +1,4 @@
-<h1>Arduino Line Follower Robotic with FreeRTOS</h1>
+<h1 align="center">Arduino Line Follower Robotic with FreeRTOS</h1>
 
 ## Distance Sensor
 - [Distance - Pure arduino library](/distance/distance.ino)
