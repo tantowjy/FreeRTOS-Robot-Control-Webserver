@@ -1,5 +1,3 @@
-// Arduino Wheel Motion with FreeRTOS using semaphore and mutexes
-
 #include <Arduino_FreeRTOS.h>
 #include <task.h>
 #include <semphr.h>
