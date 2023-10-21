@@ -1,12 +1,10 @@
 <h1 align="center">Arduino Line Follower Robotic with FreeRTOS</h1>
 
-## Distance Sensor
-- [Distance - Pure arduino library](/distance/distance.ino)
+## Schematics
 
-## Motor Motion
-- [Motor Motion - Pure arduino library](/motordriver/motordriver.ino)
-- [Motor Motion - Arduino FreeRTOS library](/motordriver_rtos/motordriver_rtos.ino)
-- [Motor Motion - Arduino FreeRTOS library with Semaphore and Mutexes](/motordriver_freertos_semaphore_mutexes/motordriver_freertos_semaphore_mutexes.ino) *new*
+## Flowcart
 
-## Full Code
-- 
+## Source Code
+- [Distance](/distance_v1/distance_v1.ino) - arduino library only.
+- [Motor Control](/motordriver_v1/motordriver_v1.ino) - arduino library only
+- [Motor Control](/motordriver_freertos_v2/motordriver_freertos_v2.ino) - arduino library + freeRTOS
