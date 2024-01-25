@@ -58,10 +58,10 @@ void setup() {
   xTaskCreate(distanceTaskFunction, "DistanceTask", 100, NULL, 1, &distanceTask);
 
   // Create tasks for each motor
-  xTaskCreate(motorAOnTaskFunction, "MotorAOnTask", 100, NULL, 1, &motorAOnTask);
-  xTaskCreate(motorBOnTaskFunction, "MotorBOnTask", 100, NULL, 1, &motorBOnTask);
-  xTaskCreate(motorAOffTaskFunction, "MotorAOffTask", 100, NULL, 1, &motorAOffTask);
-  xTaskCreate(motorBOffTaskFunction, "MotorBOffTask", 100, NULL, 1, &motorBOffTask);
+  xTaskCreate(motorAOnTaskFunction, "MotorAOnTask", 100, NULL, 3, &motorAOnTask);
+  xTaskCreate(motorBOnTaskFunction, "MotorBOnTask", 100, NULL, 4, &motorBOnTask);
+  xTaskCreate(motorAOffTaskFunction, "MotorAOffTask", 100, NULL, 3, &motorAOffTask);
+  xTaskCreate(motorBOffTaskFunction, "MotorBOffTask", 100, NULL, 4, &motorBOffTask);
 
   xTaskCreate(motorControlTask, "MotorControlTask", 100, NULL, 2, NULL);
   vTaskStartScheduler();
@@ -95,15 +95,10 @@ void motorAOnTaskFunction(void* parameter) {
   (void)parameter; // Unused
 
   while (1) {
-    // Request access to the motor A
-    if (xSemaphoreTake(motorAOnSemaphore, portMAX_DELAY) == pdTRUE) {
-      analogWrite(ENA, speedNormal);
-      digitalWrite(IN1, HIGH);
-      digitalWrite(IN2, LOW);
-
-      // Release the semaphore to allow other tasks to access the motor
-      xSemaphoreGive(motorAOnSemaphore);
-    }
+    // Control motor A
+    analogWrite(ENA, speedNormal);
+    digitalWrite(IN1, HIGH);
+    digitalWrite(IN2, LOW);
 
     // You can add a delay here if needed
     vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 100 milliseconds
@@ -114,15 +109,10 @@ void motorBOnTaskFunction(void* parameter) {
   (void)parameter; // Unused
 
   while (1) {
-    // Request access to the motor B
-    if (xSemaphoreTake(motorBOnSemaphore, portMAX_DELAY) == pdTRUE) {
-      analogWrite(ENB, speedNormal);
-      digitalWrite(IN3, LOW);
-      digitalWrite(IN4, HIGH);
-
-      // Release the semaphore to allow other tasks to access the motor
-      xSemaphoreGive(motorBOnSemaphore);
-    }
+    // Control motor B
+    analogWrite(ENB, speedNormal);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, HIGH);
 
     // You can add a delay here if needed
     vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 100 milliseconds
@@ -133,15 +123,10 @@ void motorAOffTaskFunction(void* parameter) {
   (void)parameter; // Unused
 
   while (1) {
-    // Request access to the motor A
-    if (xSemaphoreTake(motorAOffSemaphore, portMAX_DELAY) == pdTRUE) {
-      analogWrite(ENA, speedOff);
-      digitalWrite(IN1, LOW);
-      digitalWrite(IN2, LOW);
-
-      // Release the semaphore to allow other tasks to access the motor
-      xSemaphoreGive(motorAOffSemaphore);
-    }
+    // Control motor A
+    analogWrite(ENA, speedOff);
+    digitalWrite(IN1, LOW);
+    digitalWrite(IN2, LOW);
 
     // You can add a delay here if needed
     vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 100 milliseconds
@@ -152,15 +137,10 @@ void motorBOffTaskFunction(void* parameter) {
   (void)parameter; // Unused
 
   while (1) {
-    // Request access to the motor B
-    if (xSemaphoreTake(motorBOffSemaphore, portMAX_DELAY) == pdTRUE) {
-      analogWrite(ENB, speedOff);
-      digitalWrite(IN3, LOW);
-      digitalWrite(IN4, LOW);
-
-      // Release the semaphore to allow other tasks to access the motor
-      xSemaphoreGive(motorBOffSemaphore);
-    }
+    // Control motor B
+    analogWrite(ENB, speedOff);
+    digitalWrite(IN3, LOW);
+    digitalWrite(IN4, LOW);
 
     // You can add a delay here if needed
     vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 100 milliseconds
@@ -172,16 +152,22 @@ void motorControlTask(void* pvParameters) {
     if (xSemaphoreTake(distanceSemaphore, portMAX_DELAY) == pdTRUE) {
       xSemaphoreTake(distanceMutex, portMAX_DELAY); // Lock the distance variable
       if (distance > 30) {
+        // Turn on motor A and B
         xSemaphoreTake(motorAOnSemaphore, portMAX_DELAY);
         xSemaphoreTake(motorBOnSemaphore, portMAX_DELAY);
+        xSemaphoreGive(motorAOffSemaphore); // Give the semaphores back
+        xSemaphoreGive(motorBOffSemaphore);
       } else {
+        // Turn off motor A and B
         xSemaphoreTake(motorAOffSemaphore, portMAX_DELAY);
         xSemaphoreTake(motorBOffSemaphore, portMAX_DELAY);
+        xSemaphoreGive(motorAOnSemaphore); // Give the semaphores back
+        xSemaphoreGive(motorBOnSemaphore);
       }
       xSemaphoreGive(distanceMutex); // Unlock the distance variable
     }
 
-    vTaskDelay(100); // Delay for 100ms
+    vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 100ms
   }
 }
 
