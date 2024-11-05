@@ -1,4 +1,3 @@
-<h1 align="center">ESP32 Robot Control Webserver using FreeRTOS</h1>
+# README.md
 
-> [!NOTE]
-> Use WebSockets version 2.4.1 by Markus Sattler
+Use WebSockets version 2.4.1 by Markus Sattler
